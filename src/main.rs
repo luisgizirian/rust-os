@@ -17,9 +17,16 @@ pub extern "C" fn _start() -> ! {
     // // invoke a breakpoint exception
     // x86_64::instructions::interrupts::int3();
 
-    unsafe {
-        *(0xdeadbeef as *mut u64) = 42;
+    // unsafe {
+    //     *(0xdeadbeef as *mut u64) = 42;
+    // }
+
+    #[allow(unconditional_recursion)] // avoid compiler warning
+    fn stack_overflow() {
+        stack_overflow();
     }
+
+    stack_overflow();
     
     #[cfg(test)]
     test_main();
