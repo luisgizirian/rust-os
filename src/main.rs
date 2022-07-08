@@ -21,18 +21,19 @@ pub extern "C" fn _start() -> ! {
     //     *(0xdeadbeef as *mut u64) = 42;
     // }
 
-    #[allow(unconditional_recursion)] // avoid compiler warning
-    fn stack_overflow() {
-        stack_overflow();
-    }
+    // #[allow(unconditional_recursion)] // avoid compiler warning
+    // fn stack_overflow() {
+    //     stack_overflow();
+    // }
 
-    stack_overflow();
+    // stack_overflow();
     
     #[cfg(test)]
     test_main();
     
     println!("It did not crash!");
-    loop{}
+
+    blog_os::hlt_loop();
 }
 
 // This function is called on panic.
@@ -40,7 +41,8 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    
+    blog_os::hlt_loop();
 }
 
 #[cfg(test)]
