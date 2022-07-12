@@ -7,34 +7,42 @@
 
 use core::panic::PanicInfo;
 use blog_os::println;
+use bootloader::{BootInfo, entry_point};
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
+
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
+    use blog_os::memory;
+    use blog_os::memory::BootInfoFrameAllocator;
+    use x86_64::{structures::paging::{Page, Translate}, VirtAddr};
+    
     println!("Hello Rust {}", "OS!");
-
     blog_os::init();
 
-    // // invoke a breakpoint exception
-    // x86_64::instructions::interrupts::int3();
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
 
-    // let ptr = 0x205676 as *mut u32;
+    // map an unused page
+    let page = Page::containing_address(VirtAddr::new(0xdeadbeaf000));
+    memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
 
-    // unsafe { let x = *ptr; }
-    // println!("read worked!");
+    // write `New!` to the screen through the new mapping
+    let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
+    unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e) };
 
-    // unsafe { *ptr = 42; }
-    // println!("write worked!");
+    let addresses = [
+        0xb8000,
+        0x201008,
+        0x0100_0020_1a10,
+        boot_info.physical_memory_offset,
+    ];
 
-    use x86_64::registers::control::Cr3;
-    let (level_4_page_table, _) = Cr3::read();
-    println!("Level 4 page table al: {:?}", level_4_page_table.start_address());
-
-    // #[allow(unconditional_recursion)] // avoid compiler warning
-    // fn stack_overflow() {
-    //     stack_overflow();
-    // }
-
-    // stack_overflow();
+    for &address in &addresses {
+        let virt = VirtAddr::new(address);
+        let phys = mapper.translate_addr(virt);
+        println!("{:?} -> {:?}", virt, phys);
+    }
     
     #[cfg(test)]
     test_main();
