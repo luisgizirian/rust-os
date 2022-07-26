@@ -1,3 +1,4 @@
+#![feature(alloc_error_handler)]
 #![feature(abi_x86_interrupt)]
 #![no_std]
 #![cfg_attr(test, no_main)]
@@ -6,6 +7,8 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+
+extern crate alloc;
 
 #[cfg(test)]
 use bootloader::{BootInfo, entry_point};
@@ -18,6 +21,12 @@ pub mod serial;
 pub mod interrupts;
 pub mod gdt;
 pub mod memory;
+pub mod allocator;
+
+#[alloc_error_handler]
+fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
+    panic!("allocation error: {:?}", layout)
+}
 
 pub trait Testable {
     fn run(&self) -> ();
