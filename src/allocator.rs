@@ -8,11 +8,14 @@ use x86_64::{
     VirtAddr
 };
 use bump::BumpAllocator;
+use linked_list::LinkedListAllocator;
 
 pub mod bump;
+pub mod linked_list;
 
 #[global_allocator]
-static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
+static ALLOCATOR: Locked<LinkedListAllocator> = Locked::new(LinkedListAllocator::new());
+// static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
 // static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
 pub struct Dummy;
