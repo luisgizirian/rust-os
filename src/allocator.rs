@@ -1,5 +1,5 @@
 use alloc::alloc::{GlobalAlloc, Layout};
-use linked_list_allocator::LockedHeap;
+//use linked_list_allocator::LockedHeap;
 use core::ptr::null_mut;
 use x86_64::{
     structures::paging::{
@@ -7,9 +7,13 @@ use x86_64::{
     },
     VirtAddr
 };
+use bump::BumpAllocator;
+
+pub mod bump;
 
 #[global_allocator]
-static ALLOCATOR: LockedHeap = LockedHeap::empty();
+static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
+// static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
 pub struct Dummy;
 
@@ -55,3 +59,39 @@ pub fn init_heap(
 
     Ok(())
 }
+
+/// A wrapper around spin::Mutex to allow trait implementations
+pub struct Locked<A> {
+    inner: spin::Mutex<A>
+}
+
+impl<A> Locked<A> {
+    pub const fn new(inner: A) -> Self {
+        Locked {
+            inner: spin::Mutex::new(inner),
+        }
+    }
+
+    pub fn lock(&self) -> spin::MutexGuard<A> {
+        self.inner.lock()
+    }
+}
+
+//
+//
+/// Align the given address `addr` upwards to alignment `align`.
+// fn align_up(addr: usize, align: usize) -> usize {
+//     let remainder = addr % align;
+//     if remainder == 0 {
+//         addr // addr already assigned
+//     } else {
+//         addr - remainder + align
+//     }
+// }
+
+// A much faster implementation... requires that `align` is always a power of 2.
+fn align_up(addr: usize, align: usize) -> usize {
+    (addr + align - 1) & !(align - 1)
+}
+//
+//
