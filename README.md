@@ -5,7 +5,7 @@ Guide by Philipp Opperman published at https://os.phil-opp.com
 To follow the guideline and posts, and coming up with a working prototype.
 
 ## An idea...
-Being `x86_64` the target architecture, `bare metal` and `arm` sound as potential candidates for later extending upon this nicely put guide.
+Being `x86_64` the target architecture, `bare metal` and `arm` sound as potential candidates for later extending upon this nicely put guide. How about RISC-V (https://osblog.stephenmarz.com/ch0.html#:~:text=Rust%20now%20supports%20RISC-V%20out-of-the-box%21%20This%20makes%20it,%28the%20emulator%29%20from%20the%20old%20tutorial%20at%20ch0.old.html)? :)
 
 ## Testing Flow
 
