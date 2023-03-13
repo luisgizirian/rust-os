@@ -5,7 +5,7 @@ Guide by Philipp Opperman published at https://os.phil-opp.com
 To follow the guideline and posts, and coming up with a working prototype.
 
 ## An idea...
-Being `x86_64` the target architecture, `bare metal` and `arm` sound as potential candidates for later extending upon this nicely put guide. How about RISC-V (https://osblog.stephenmarz.com/ch0.html)? :)
+Being `x86_64` the target architecture, `bare metal` and `arm` sound as potential candidates for later extending upon this nicely put guide. How about `RISC-V` (https://osblog.stephenmarz.com/ch0.html)? :)
 
 ## Testing Flow
 
